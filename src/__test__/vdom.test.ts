@@ -1,5 +1,5 @@
-import {v} from '../vdom';
-import mount from '../mount';
+import {v} from '../v';
+import {mount} from '../mount';
 
 describe('VDOM', () => {
   let node: any;
@@ -15,7 +15,7 @@ describe('VDOM', () => {
   });
 
   it('should mount the node into the real DOM', () => {
-    const app = document.getElementById('app');
+    const app = document.getElementById('app') as HTMLDivElement;
 
     expect(mount(node, app)).toBe({});
   });
