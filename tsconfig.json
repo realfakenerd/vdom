@@ -16,7 +16,6 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "rootDir": "src/",
-    "outDir": "dist/"
   },
   "include": [
     "./src"

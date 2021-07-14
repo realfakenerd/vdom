@@ -1,93 +1,22 @@
-/* eslint-disable require-jsdoc */
+/* eslint-disable no-unused-vars */
+import {vDom, prop, child} from './interfaces';
 
-function unmount(vnode) {
-  vnode.el.parentNode.removeChild(vnode.el);
-}
-
-function patch(n1, n2) {
-  const el = (n2.el = n1.el);
-
-  /** case where the nodes are of different tag types */
-  if (n1.tag !== n2.tag) {
-    mount(n2, el.parentNode);
-    unmount(n1);
-  } else {
-    /** case where the nodes are the same tag type 
-            v new virtual node has string type children */
-    if (typeof n2.children === 'string') {
-      el.textContent = n2.children;
-    } else {
-      /** New virtual node has array children
-                Old virtual node has string children */
-      if (typeof n1.children === 'string') {
-        el.textContent = '';
-        n2.children.forEach((child) => mount(child, el));
-      } else {
-        /** Case where the new vnode has string children */
-        const c1 = n1.children;
-        const c2 = n2.children;
-        const commonLength = Math.min(c1.length, c2.length);
-        let i = 0;
-        /** Patch the children both nodes have in common */
-        for (i; i < commonLength; i++) {
-          patch(c1[i], c2[i]);
-        }
-        if (c1.length > c2.length) {
-          /** Old children was longer
-                    Remove the children that are not 'there' anymore */
-          c1.slice(c2.length).forEach((child) => {
-            unmount(child);
-          });
-        } else if (c2.length > c1.length) {
-          /** Old children was shorter
-                    Add the newly added children */
-          c2.slice(c1.length).forEach((child) => {
-            mount(child, el);
-          });
-        }
-      }
-    }
-  }
-}
-
-let activeEffect;
-
-function watchEffect(fn) {
-  const wrappedFn = () => {
-    activeEffect = fn;
-    fn();
-    activeEffect = null;
+/**
+ * Helper function to represent a DOM node
+ * @param {string} tag - tag node name
+ * @param {prop=} props - properties of the node
+ * @param {child=} children - child nodes for 'nodeinception'
+ * @return {vDom} a virtual representation of the DOM
+ */
+export function v(tag: string, props?: prop, children?: child): vDom {
+  // let key;
+  // if (props?.key) {
+  //   key = props.key as string;
+  //   delete props.key;
+  // }
+  return {
+    tag,
+    props,
+    children,
   };
-  wrappedFn();
-}
-
-class Observer {
-  subscribers = new Set();
-  depend() {
-    if (activeEffect) this.subscribers.add(activeEffect);
-  }
-
-  notify() {
-    this.subscribers.forEach((sub) => sub());
-  }
-}
-
-function reactive(obj) {
-  Object.keys(obj).forEach((key) => {
-    const dep = new Observer();
-    let value = obj[key];
-    Object.defineProperty(obj, key, {
-      get() {
-        dep.depend();
-        return value;
-      },
-      set(newValue) {
-        if (newValue !== value) {
-          value = newValue;
-          dep.notify();
-        }
-      },
-    });
-  });
-  return obj;
 }

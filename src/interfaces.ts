@@ -1,8 +1,9 @@
-export type prop = Record<string, string | null | undefined | (() => void)>;
-export type child = vDom[] | string | Array<any>;
+export type prop = Record<string, string | number | null | undefined>;
+export type child = vDom[] | string;
 
 export interface vDom {
   tag: string;
   props?: prop;
   children?: child;
+  el?: HTMLElement;
 }
